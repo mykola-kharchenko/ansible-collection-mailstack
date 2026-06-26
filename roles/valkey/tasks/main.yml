@@ -1,0 +1,25 @@
+---
+- name: Install Valkey
+  ansible.builtin.dnf:
+    name: "{{ mailstack_valkey_packages }}"
+    state: present
+
+- name: Deploy Valkey configuration
+  ansible.builtin.template:
+    src: valkey.conf.j2
+    dest: /etc/valkey/valkey.conf
+    owner: root
+    group: valkey
+    mode: "0640"
+  notify: Restart Valkey
+
+- name: Enable Valkey unit
+  ansible.builtin.systemd_service:
+    name: valkey
+    enabled: true
+
+- name: Start Valkey
+  ansible.builtin.systemd_service:
+    name: valkey
+    state: started
+  when: mailstack_start_services | bool

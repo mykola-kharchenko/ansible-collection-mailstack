@@ -1,0 +1,23 @@
+---
+mailstack_valkey_packages:
+  - valkey
+
+# Networking. Rspamd talks to Valkey over the loopback only; nothing in the
+# stack needs it exposed off-box.
+mailstack_valkey_bind: 127.0.0.1
+mailstack_valkey_port: 6379
+
+# Memory. Rspamd stores learned Bayes tokens here, so the default eviction
+# policy is noeviction — we never want statistics silently dropped.
+mailstack_valkey_maxmemory: 256mb
+mailstack_valkey_maxmemory_policy: noeviction
+
+mailstack_valkey_dir: /var/lib/valkey
+mailstack_valkey_logfile: /var/log/valkey/valkey.log
+
+# Persist to disk so greylisting and stats survive a reboot.
+mailstack_valkey_save: true
+
+# Build-time vs runtime: units are always enabled, but only started when a
+# real systemd is running (false during image build).
+mailstack_start_services: true

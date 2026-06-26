@@ -1,0 +1,28 @@
+# {{ ansible_managed }}
+# Valkey backend for Rspamd (statistics, greylisting, ratelimits).
+
+bind {{ mailstack_valkey_bind }}
+port {{ mailstack_valkey_port }}
+protected-mode yes
+
+# Run under systemd supervision; logging goes to a file watched by nothing
+# critical, but kept for debugging.
+supervised systemd
+daemonize no
+pidfile /run/valkey/valkey.pid
+logfile {{ mailstack_valkey_logfile }}
+dir {{ mailstack_valkey_dir }}
+
+maxmemory {{ mailstack_valkey_maxmemory }}
+maxmemory-policy {{ mailstack_valkey_maxmemory_policy }}
+
+{% if mailstack_valkey_save %}
+# RDB snapshots — keep learned data across reboots.
+save 900 1
+save 300 10
+save 60 10000
+appendonly no
+{% else %}
+save ""
+appendonly no
+{% endif %}

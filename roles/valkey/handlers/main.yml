@@ -1,0 +1,6 @@
+---
+- name: Restart Valkey
+  ansible.builtin.systemd_service:
+    name: valkey
+    state: restarted
+  when: mailstack_start_services | bool
