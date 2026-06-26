@@ -1,0 +1,27 @@
+---
+- name: Load distribution repository variables
+  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', _params) }}"
+  vars:
+    _params:
+      files:
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+      paths:
+        - vars
+
+- name: Fail on unsupported platform
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == "RedHat"
+    fail_msg: >-
+      mailstack supports the RedHat OS family (Fedora and RHEL) only;
+      detected {{ ansible_distribution }} ({{ ansible_os_family }}).
+    quiet: true
+
+- name: Configure Fedora base repositories
+  ansible.builtin.include_tasks: fedora.yml
+  when: ansible_distribution == "Fedora"
+
+- name: Configure RHEL repositories (CRB, EPEL, Rspamd)
+  ansible.builtin.include_tasks: rhel.yml
+  when: ansible_distribution != "Fedora"

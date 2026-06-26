@@ -1,0 +1,8 @@
+---
+# Fedora ships every component the stack needs (Postfix, Dovecot, Rspamd,
+# ClamAV, Valkey, Fail2ban) in its base repositories. Nothing extra to enable;
+# we only ensure the dnf plugin tooling the later roles rely on is present.
+- name: Ensure dnf plugins are installed
+  ansible.builtin.dnf:
+    name: "{{ mailstack_repos_packages }}"
+    state: present

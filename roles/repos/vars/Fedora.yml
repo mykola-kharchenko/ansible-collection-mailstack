@@ -1,0 +1,3 @@
+---
+mailstack_repos_packages:
+  - dnf-plugins-core
