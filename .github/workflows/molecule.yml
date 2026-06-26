@@ -10,6 +10,11 @@ jobs:
   molecule:
     name: smoke scenario (podman + systemd)
     runs-on: ubuntu-latest
+    # Set at the job level so `ansible-galaxy install` writes to the same path
+    # Molecule searches — otherwise deps land in ~/.ansible and aren't found.
+    env:
+      ANSIBLE_COLLECTIONS_PATH: ${{ github.workspace }}
+      ANSIBLE_FORCE_COLOR: "1"
     steps:
       # Check out into the collection path so FQCN role references resolve.
       - name: Check out
@@ -36,7 +41,4 @@ jobs:
 
       - name: Run Molecule
         working-directory: ansible_collections/mykola_kharchenko/mailstack
-        env:
-          ANSIBLE_COLLECTIONS_PATH: ${{ github.workspace }}
-          ANSIBLE_FORCE_COLOR: "1"
         run: molecule test
