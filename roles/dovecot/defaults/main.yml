@@ -1,0 +1,26 @@
+---
+mailstack_dovecot_packages:
+  - dovecot
+  - dovecot-pigeonhole
+
+mailstack_dovecot_protocols: imap pop3 lmtp sieve
+
+# Virtual mailbox storage. All virtual users map to a single system user.
+mailstack_dovecot_mail_root: /var/mail/vhosts
+mailstack_dovecot_mail_location: "maildir:{{ mailstack_dovecot_mail_root }}/%d/%n"
+mailstack_dovecot_vmail_user: vmail
+mailstack_dovecot_vmail_group: vmail
+mailstack_dovecot_vmail_uid: 5000
+mailstack_dovecot_vmail_gid: 5000
+
+# passwd-file passdb populated day-2 (one line per mailbox).
+mailstack_dovecot_userdb_file: /etc/dovecot/users
+mailstack_dovecot_password_scheme: ARGON2ID
+
+mailstack_dovecot_postmaster_address: "postmaster@{{ ansible_domain | default('example.com') }}"
+
+# TLS material (installed/renewed day-2).
+mailstack_dovecot_tls_cert: /etc/pki/tls/certs/mail.crt
+mailstack_dovecot_tls_key: /etc/pki/tls/private/mail.key
+
+mailstack_start_services: true

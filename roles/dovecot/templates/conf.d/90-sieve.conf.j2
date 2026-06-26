@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+plugin {
+  sieve = file:~/sieve;active=~/.dovecot.sieve
+  sieve_dir = ~/sieve
+  # Global default applied to every user before their personal script.
+  sieve_default = /var/lib/dovecot/sieve/default.sieve
+  sieve_default_name = default
+}

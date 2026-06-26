@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+postmaster_address = {{ mailstack_dovecot_postmaster_address }}
+
+protocol lda {
+  mail_plugins = $mail_plugins sieve
+}

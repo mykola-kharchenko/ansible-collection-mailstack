@@ -1,0 +1,46 @@
+# {{ ansible_managed }}
+service imap-login {
+  inet_listener imap {
+    port = 143
+  }
+  inet_listener imaps {
+    port = 993
+    ssl = yes
+  }
+}
+
+service pop3-login {
+  inet_listener pop3 {
+    port = 110
+  }
+  inet_listener pop3s {
+    port = 995
+    ssl = yes
+  }
+}
+
+# LMTP endpoint Postfix delivers to (socket lives in Postfix's private spool).
+service lmtp {
+  unix_listener /var/spool/postfix/private/dovecot-lmtp {
+    mode = 0600
+    user = postfix
+    group = postfix
+  }
+}
+
+# SASL: Postfix submission auth + Dovecot's own userdb lookups.
+service auth {
+  unix_listener /var/spool/postfix/private/auth {
+    mode = 0660
+    user = postfix
+    group = postfix
+  }
+  unix_listener auth-userdb {
+    mode = 0660
+    user = {{ mailstack_dovecot_vmail_user }}
+  }
+}
+
+service auth-worker {
+  user = {{ mailstack_dovecot_vmail_user }}
+}

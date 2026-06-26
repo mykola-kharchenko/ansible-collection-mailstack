@@ -1,0 +1,10 @@
+---
+- name: Compile default Sieve
+  ansible.builtin.command: sievec /var/lib/dovecot/sieve/default.sieve
+  changed_when: true
+
+- name: Restart Dovecot
+  ansible.builtin.systemd_service:
+    name: dovecot
+    state: restarted
+  when: mailstack_start_services | bool

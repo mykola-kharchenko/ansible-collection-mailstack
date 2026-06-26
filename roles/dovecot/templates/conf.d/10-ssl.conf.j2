@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+ssl = required
+ssl_cert = <{{ mailstack_dovecot_tls_cert }}
+ssl_key = <{{ mailstack_dovecot_tls_key }}
+ssl_min_protocol = TLSv1.2
+ssl_prefer_server_ciphers = yes

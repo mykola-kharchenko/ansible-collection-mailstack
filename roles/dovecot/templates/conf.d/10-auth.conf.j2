@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+disable_plaintext_auth = yes
+auth_mechanisms = plain login
+
+# Virtual users: credentials from a passwd-file, all mapped to one system user.
+passdb {
+  driver = passwd-file
+  args = scheme={{ mailstack_dovecot_password_scheme }} username_format=%u {{ mailstack_dovecot_userdb_file }}
+}
+
+userdb {
+  driver = static
+  args = uid={{ mailstack_dovecot_vmail_uid }} gid={{ mailstack_dovecot_vmail_gid }} home={{ mailstack_dovecot_mail_root }}/%d/%n
+}

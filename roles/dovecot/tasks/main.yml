@@ -1,0 +1,91 @@
+---
+- name: Install Dovecot and Pigeonhole
+  ansible.builtin.dnf:
+    name: "{{ mailstack_dovecot_packages }}"
+    state: present
+
+- name: Create vmail group
+  ansible.builtin.group:
+    name: "{{ mailstack_dovecot_vmail_group }}"
+    gid: "{{ mailstack_dovecot_vmail_gid }}"
+    system: true
+
+- name: Create vmail user
+  ansible.builtin.user:
+    name: "{{ mailstack_dovecot_vmail_user }}"
+    uid: "{{ mailstack_dovecot_vmail_uid }}"
+    group: "{{ mailstack_dovecot_vmail_group }}"
+    home: "{{ mailstack_dovecot_mail_root }}"
+    shell: /sbin/nologin
+    system: true
+
+- name: Ensure mailbox storage root exists
+  ansible.builtin.file:
+    path: "{{ mailstack_dovecot_mail_root }}"
+    state: directory
+    owner: "{{ mailstack_dovecot_vmail_user }}"
+    group: "{{ mailstack_dovecot_vmail_group }}"
+    mode: "0770"
+
+- name: Ensure passwd-file userdb exists
+  ansible.builtin.copy:
+    content: ""
+    dest: "{{ mailstack_dovecot_userdb_file }}"
+    owner: root
+    group: dovecot
+    mode: "0640"
+    force: false
+
+- name: Ensure global Sieve directory exists
+  ansible.builtin.file:
+    path: /var/lib/dovecot/sieve
+    state: directory
+    owner: "{{ mailstack_dovecot_vmail_user }}"
+    group: "{{ mailstack_dovecot_vmail_group }}"
+    mode: "0750"
+
+- name: Deploy dovecot.conf
+  ansible.builtin.template:
+    src: dovecot.conf.j2
+    dest: /etc/dovecot/dovecot.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Dovecot
+
+- name: Deploy conf.d fragments
+  ansible.builtin.template:
+    src: "conf.d/{{ item }}.j2"
+    dest: "/etc/dovecot/conf.d/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - 10-mail.conf
+    - 10-auth.conf
+    - 10-master.conf
+    - 10-ssl.conf
+    - 15-lda.conf
+    - 20-lmtp.conf
+    - 90-sieve.conf
+  notify: Restart Dovecot
+
+- name: Deploy global default Sieve script
+  ansible.builtin.template:
+    src: sieve/default.sieve.j2
+    dest: /var/lib/dovecot/sieve/default.sieve
+    owner: "{{ mailstack_dovecot_vmail_user }}"
+    group: "{{ mailstack_dovecot_vmail_group }}"
+    mode: "0640"
+  notify: Compile default Sieve
+
+- name: Enable Dovecot unit
+  ansible.builtin.systemd_service:
+    name: dovecot
+    enabled: true
+
+- name: Start Dovecot
+  ansible.builtin.systemd_service:
+    name: dovecot
+    state: started
+  when: mailstack_start_services | bool

@@ -1,0 +1,4 @@
+# {{ ansible_managed }}
+protocols = {{ mailstack_dovecot_protocols }}
+listen = *, ::
+!include conf.d/*.conf
