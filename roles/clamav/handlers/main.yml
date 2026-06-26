@@ -1,0 +1,14 @@
+---
+- name: Restart clamd
+  ansible.builtin.systemd_service:
+    name: "clamd@{{ mailstack_clamav_instance }}"
+    state: restarted
+  when: mailstack_start_services | bool
+
+# Owned here because this role is what installs the antivirus.conf; keeping the
+# handler local makes the clamav role usable on its own.
+- name: Restart Rspamd for antivirus
+  ansible.builtin.systemd_service:
+    name: rspamd
+    state: restarted
+  when: mailstack_start_services | bool

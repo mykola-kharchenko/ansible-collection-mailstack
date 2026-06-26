@@ -1,0 +1,8 @@
+---
+- name: Allow ClamAV to scan the system and use JIT
+  ansible.posix.seboolean:
+    name: "{{ item }}"
+    state: true
+    persistent: true
+  loop: "{{ mailstack_clamav_selinux_booleans }}"
+  when: ansible_selinux.status | default('disabled') == 'enabled'

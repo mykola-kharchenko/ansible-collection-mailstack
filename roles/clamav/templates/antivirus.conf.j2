@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+# Rspamd antivirus module — hands message bodies to clamd over its local socket.
+clamav {
+  type = "clamav";
+  servers = "{{ mailstack_clamav_socket }}";
+  action = "{{ mailstack_clamav_action }}";
+  symbol = "CLAM_VIRUS";
+  scan_mime_parts = true;
+  max_size = 104857600;
+}

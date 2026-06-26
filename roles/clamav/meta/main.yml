@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  author: Mykola Kharchenko
+  description: Install ClamAV and wire it to the Rspamd antivirus module
+  license: GPL-3.0-or-later
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Fedora
+      versions:
+        - all
+    - name: EL
+      versions:
+        - "9"
+        - "10"
+  galaxy_tags:
+    - mail
+    - clamav
+    - antivirus
+    - rspamd
+dependencies: []

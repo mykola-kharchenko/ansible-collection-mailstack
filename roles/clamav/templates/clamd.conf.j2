@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+# clamd instance "{{ mailstack_clamav_instance }}" — scans mail handed over by
+# Rspamd's antivirus module over the local socket below.
+
+LogTime yes
+LogSyslog yes
+User clamscan
+
+LocalSocket {{ mailstack_clamav_socket }}
+LocalSocketGroup {{ mailstack_clamav_socket_group }}
+LocalSocketMode 660
+FixStaleSocket yes
+
+MaxThreads 12
+MaxFileSize 100M
+MaxScanSize 150M
+StreamMaxLength 100M

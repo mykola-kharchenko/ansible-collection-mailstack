@@ -1,0 +1,26 @@
+---
+mailstack_clamav_packages:
+  - clamd
+  - clamav
+  - clamav-update
+
+# clamd runs as a templated instance: clamd@<instance>, config in
+# /etc/clamd.d/<instance>.conf.
+mailstack_clamav_instance: scan
+mailstack_clamav_socket: /run/clamd.scan/clamd.sock
+mailstack_clamav_freshclam_service: clamav-freshclam
+
+# The socket is group-owned by _rspamd so the Rspamd antivirus module can
+# reach it without loosening world permissions.
+mailstack_clamav_socket_group: _rspamd
+
+# SELinux booleans that let clamd JIT-compile signatures and scan files
+# outside its own data dir (the mail spool).
+mailstack_clamav_selinux_booleans:
+  - antivirus_can_scan_system
+  - antivirus_use_jit
+
+# Action Rspamd takes when clamd reports a hit.
+mailstack_clamav_action: reject
+
+mailstack_start_services: true

@@ -1,0 +1,49 @@
+---
+- name: Install ClamAV
+  ansible.builtin.dnf:
+    name: "{{ mailstack_clamav_packages }}"
+    state: present
+
+- name: Configure SELinux booleans
+  ansible.builtin.include_tasks: selinux.yml
+
+- name: Deploy clamd instance configuration
+  ansible.builtin.template:
+    src: clamd.conf.j2
+    dest: "/etc/clamd.d/{{ mailstack_clamav_instance }}.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart clamd
+
+- name: Seed the ClamAV virus database
+  ansible.builtin.command: freshclam
+  register: _freshclam
+  changed_when: "'is up to date' not in _freshclam.stdout"
+  failed_when: _freshclam.rc not in [0, 1]
+
+- name: Wire the Rspamd antivirus module to clamd
+  ansible.builtin.template:
+    src: antivirus.conf.j2
+    dest: /etc/rspamd/local.d/antivirus.conf
+    owner: root
+    group: _rspamd
+    mode: "0640"
+  notify: Restart Rspamd for antivirus
+
+- name: Enable ClamAV units
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    enabled: true
+  loop:
+    - "clamd@{{ mailstack_clamav_instance }}"
+    - "{{ mailstack_clamav_freshclam_service }}"
+
+- name: Start ClamAV units
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: started
+  loop:
+    - "{{ mailstack_clamav_freshclam_service }}"
+    - "clamd@{{ mailstack_clamav_instance }}"
+  when: mailstack_start_services | bool
