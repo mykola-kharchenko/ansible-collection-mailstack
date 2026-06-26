@@ -19,9 +19,12 @@ mailstack_dovecot_password_scheme: ARGON2ID
 
 mailstack_dovecot_postmaster_address: "postmaster@{{ ansible_domain | default('example.com') }}"
 
-# TLS material (installed/renewed day-2).
+# TLS material (installed/renewed day-2). Provide the PEM contents to install
+# them; leave empty to manage the files out of band (e.g. certbot).
 mailstack_dovecot_tls_cert: /etc/pki/tls/certs/mail.crt
 mailstack_dovecot_tls_key: /etc/pki/tls/private/mail.key
+mailstack_dovecot_tls_cert_content: ""
+mailstack_dovecot_tls_key_content: ""
 
 # Firewall: IMAP (143), IMAPS (993), POP3 (110), POP3S (995).
 mailstack_manage_firewall: true

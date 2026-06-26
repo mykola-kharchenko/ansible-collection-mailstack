@@ -20,9 +20,12 @@ mailstack_postfix_sasl_path: "private/auth"
 
 mailstack_postfix_message_size_limit: 52428800
 
-# Server TLS material (installed/renewed day-2).
+# Server TLS material (installed/renewed day-2). Provide the PEM contents to
+# install them; leave empty to manage the files out of band (e.g. certbot).
 mailstack_postfix_tls_cert: /etc/pki/tls/certs/mail.crt
 mailstack_postfix_tls_key: /etc/pki/tls/private/mail.key
+mailstack_postfix_tls_cert_content: ""
+mailstack_postfix_tls_key_content: ""
 
 # Firewall: SMTP (25), SMTPS (465), submission (587).
 mailstack_manage_firewall: true

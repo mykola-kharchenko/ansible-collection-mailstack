@@ -1,0 +1,23 @@
+---
+# Day-2: install/renew Dovecot TLS material. No-op when contents are empty,
+# leaving the files to be managed out of band (e.g. certbot deploy hook).
+- name: Install Dovecot TLS certificate
+  ansible.builtin.copy:
+    content: "{{ mailstack_dovecot_tls_cert_content }}"
+    dest: "{{ mailstack_dovecot_tls_cert }}"
+    owner: root
+    group: root
+    mode: "0644"
+  when: mailstack_dovecot_tls_cert_content | length > 0
+  notify: Restart Dovecot
+
+- name: Install Dovecot TLS private key
+  ansible.builtin.copy:
+    content: "{{ mailstack_dovecot_tls_key_content }}"
+    dest: "{{ mailstack_dovecot_tls_key }}"
+    owner: root
+    group: root
+    mode: "0600"
+  when: mailstack_dovecot_tls_key_content | length > 0
+  no_log: true
+  notify: Restart Dovecot

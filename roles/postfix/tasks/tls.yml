@@ -1,0 +1,23 @@
+---
+# Day-2: install/renew Postfix TLS material. No-op when contents are empty,
+# leaving the files to be managed out of band (e.g. certbot deploy hook).
+- name: Install Postfix TLS certificate
+  ansible.builtin.copy:
+    content: "{{ mailstack_postfix_tls_cert_content }}"
+    dest: "{{ mailstack_postfix_tls_cert }}"
+    owner: root
+    group: root
+    mode: "0644"
+  when: mailstack_postfix_tls_cert_content | length > 0
+  notify: Reload Postfix
+
+- name: Install Postfix TLS private key
+  ansible.builtin.copy:
+    content: "{{ mailstack_postfix_tls_key_content }}"
+    dest: "{{ mailstack_postfix_tls_key }}"
+    owner: root
+    group: root
+    mode: "0600"
+  when: mailstack_postfix_tls_key_content | length > 0
+  no_log: true
+  notify: Reload Postfix
