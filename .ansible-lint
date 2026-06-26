@@ -1,0 +1,16 @@
+---
+profile: production
+
+exclude_paths:
+  - .cache/
+  - .github/
+  - docs/
+  - molecule/
+
+# Mailstack config files are templates; jinja-in-when and long lines in
+# generated mail config are accepted consciously.
+skip_list:
+  - var-naming[no-role-prefix]  # shared mailstack_* vars span several roles
+
+use_default_rules: true
+offline: false
