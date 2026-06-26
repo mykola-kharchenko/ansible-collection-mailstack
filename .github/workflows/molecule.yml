@@ -29,7 +29,10 @@ jobs:
 
       - name: Install collection dependencies
         working-directory: ansible_collections/mykola_kharchenko/mailstack
-        run: ansible-galaxy collection install -r requirements.yml
+        run: |
+          ansible-galaxy collection install -r requirements.yml
+          # Required by the Molecule podman driver's create/destroy playbooks.
+          ansible-galaxy collection install containers.podman
 
       - name: Run Molecule
         working-directory: ansible_collections/mykola_kharchenko/mailstack
