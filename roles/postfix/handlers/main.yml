@@ -1,4 +1,18 @@
 ---
+# Map compilers run before Reload because they are defined first; both fire
+# together when a lookup table changes.
+- name: Postmap virtual domains
+  ansible.builtin.command: postmap /etc/postfix/virtual_domains
+  changed_when: true
+
+- name: Postmap virtual mailbox
+  ansible.builtin.command: postmap /etc/postfix/virtual_mailbox
+  changed_when: true
+
+- name: Postmap virtual alias
+  ansible.builtin.command: postmap /etc/postfix/virtual_alias
+  changed_when: true
+
 - name: Reload Postfix
   ansible.builtin.systemd_service:
     name: postfix

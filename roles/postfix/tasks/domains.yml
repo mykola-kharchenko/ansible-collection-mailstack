@@ -1,0 +1,25 @@
+---
+# Day-2: render the virtual mailbox domains lookup table from mailstack_domains.
+- name: Write virtual mailbox domains map
+  ansible.builtin.copy:
+    dest: /etc/postfix/virtual_domains
+    content: "{% for d in mailstack_domains %}{{ d }} OK\n{% endfor %}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Postmap virtual domains
+    - Reload Postfix
+
+# Recipient validity map — Postfix must know which addresses to accept before
+# handing them to Dovecot over LMTP.
+- name: Write virtual mailbox recipient map
+  ansible.builtin.copy:
+    dest: /etc/postfix/virtual_mailbox
+    content: "{% for m in mailstack_mailboxes %}{{ m.user }} OK\n{% endfor %}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Postmap virtual mailbox
+    - Reload Postfix

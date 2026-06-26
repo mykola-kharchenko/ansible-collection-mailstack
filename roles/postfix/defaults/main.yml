@@ -31,4 +31,13 @@ mailstack_postfix_firewall_ports:
   - 465/tcp
   - 587/tcp
 
+# Day-2 data (managed by playbooks/provision.yml). Examples:
+#   mailstack_domains:
+#     - example.com
+#   mailstack_aliases:
+#     - {source: "info@example.com", destination: "alice@example.com"}
+mailstack_domains: []
+mailstack_aliases: []
+mailstack_mailboxes: []
+
 mailstack_start_services: true

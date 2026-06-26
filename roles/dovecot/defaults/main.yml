@@ -31,4 +31,10 @@ mailstack_dovecot_firewall_ports:
   - 110/tcp
   - 995/tcp
 
+# Day-2 mailboxes (managed by playbooks/provision.yml). Example:
+#   mailstack_mailboxes:
+#     - user: "alice@example.com"
+#       password_hash: "{ARGON2ID}$argon2id$..."  # doveadm pw -s ARGON2ID
+mailstack_mailboxes: []
+
 mailstack_start_services: true

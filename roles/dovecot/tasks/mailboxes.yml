@@ -1,0 +1,26 @@
+---
+# Day-2: virtual mailbox credentials and storage from mailstack_mailboxes.
+# Each item: { user: "name@domain", password_hash: "{ARGON2ID}..." }
+# Generate a hash with: doveadm pw -s ARGON2ID -p '<password>'
+- name: Ensure mailbox credentials
+  ansible.builtin.lineinfile:
+    path: "{{ mailstack_dovecot_userdb_file }}"
+    regexp: "^{{ item.user | regex_escape }}:"
+    line: "{{ item.user }}:{{ item.password_hash }}"
+    owner: root
+    group: dovecot
+    mode: "0640"
+  loop: "{{ mailstack_mailboxes }}"
+  loop_control:
+    label: "{{ item.user }}"
+
+- name: Ensure mailbox storage exists
+  ansible.builtin.file:
+    path: "{{ mailstack_dovecot_mail_root }}/{{ item.user.split('@')[1] }}/{{ item.user.split('@')[0] }}"
+    state: directory
+    owner: "{{ mailstack_dovecot_vmail_user }}"
+    group: "{{ mailstack_dovecot_vmail_group }}"
+    mode: "0700"
+  loop: "{{ mailstack_mailboxes }}"
+  loop_control:
+    label: "{{ item.user }}"

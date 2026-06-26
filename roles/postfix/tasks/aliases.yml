@@ -1,0 +1,12 @@
+---
+# Day-2: render the virtual alias lookup table from mailstack_aliases.
+- name: Write virtual alias map
+  ansible.builtin.copy:
+    dest: /etc/postfix/virtual_alias
+    content: "{% for a in mailstack_aliases %}{{ a.source }} {{ a.destination }}\n{% endfor %}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Postmap virtual alias
+    - Reload Postfix
