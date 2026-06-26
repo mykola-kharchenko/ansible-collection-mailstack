@@ -1,0 +1,23 @@
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+driver:
+  name: podman
+platforms:
+  - name: mailstack-fedora
+    image: quay.io/fedora/fedora:42
+    systemd: always
+    command: /usr/sbin/init
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /run
+      - /tmp
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

@@ -1,0 +1,44 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    # No firewalld in the test container; PLAIN scheme avoids hashing tooling.
+    mailstack_manage_firewall: false
+    mailstack_fail2ban_packages:
+      - fail2ban
+    mailstack_fail2ban_banaction: dummy
+    mailstack_dovecot_password_scheme: PLAIN
+    mailstack_domains:
+      - example.test
+    mailstack_mailboxes:
+      - user: alice@example.test
+        password_hash: "ChangeMe123"
+    mailstack_aliases:
+      - source: postmaster@example.test
+        destination: alice@example.test
+  roles:
+    - mykola_kharchenko.mailstack.repos
+    - mykola_kharchenko.mailstack.valkey
+    - mykola_kharchenko.mailstack.rspamd
+    - mykola_kharchenko.mailstack.clamav
+    - mykola_kharchenko.mailstack.postfix
+    - mykola_kharchenko.mailstack.dovecot
+    - mykola_kharchenko.mailstack.fail2ban
+  post_tasks:
+    - name: Day-2 — domains
+      ansible.builtin.include_role:
+        name: mykola_kharchenko.mailstack.postfix
+        tasks_from: domains.yml
+    - name: Day-2 — aliases
+      ansible.builtin.include_role:
+        name: mykola_kharchenko.mailstack.postfix
+        tasks_from: aliases.yml
+    - name: Day-2 — mailboxes
+      ansible.builtin.include_role:
+        name: mykola_kharchenko.mailstack.dovecot
+        tasks_from: mailboxes.yml
+    - name: Day-2 — DKIM
+      ansible.builtin.include_role:
+        name: mykola_kharchenko.mailstack.rspamd
+        tasks_from: dkim.yml

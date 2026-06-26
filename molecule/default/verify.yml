@@ -1,0 +1,54 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  tasks:
+    - name: Collect service facts
+      ansible.builtin.service_facts:
+
+    - name: Assert core services are running
+      ansible.builtin.assert:
+        that:
+          - "ansible_facts.services[item ~ '.service'].state == 'running'"
+        fail_msg: "{{ item }} is not running"
+        quiet: true
+      loop:
+        - valkey
+        - rspamd
+        - postfix
+        - dovecot
+
+    - name: Assert listening ports are open
+      ansible.builtin.wait_for:
+        port: "{{ item }}"
+        host: 127.0.0.1
+        timeout: 10
+      loop:
+        - 25      # Postfix smtp
+        - 143     # Dovecot imap
+        - 587     # Postfix submission
+        - 11332   # Rspamd milter
+
+    - name: Assert a DKIM key was generated
+      ansible.builtin.stat:
+        path: /var/lib/rspamd/dkim/example.test.default.key
+      register: _dkim_key
+
+    - name: Fail if the DKIM key is missing
+      ansible.builtin.assert:
+        that:
+          - _dkim_key.stat.exists
+        fail_msg: DKIM key for example.test was not generated
+        quiet: true
+
+    - name: Read the Dovecot userdb
+      ansible.builtin.slurp:
+        src: /etc/dovecot/users
+      register: _userdb
+
+    - name: Assert the mailbox credential was written
+      ansible.builtin.assert:
+        that:
+          - "'alice@example.test:' in (_userdb.content | b64decode)"
+        fail_msg: alice@example.test was not added to the userdb
+        quiet: true
