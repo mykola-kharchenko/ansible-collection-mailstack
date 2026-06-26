@@ -12,6 +12,9 @@ description: >-
 license:
   - GPL-3.0-or-later
 tags:
+  - infrastructure
+  - linux
+  - security
   - mail
   - mailserver
   - postfix
