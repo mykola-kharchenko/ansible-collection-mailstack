@@ -1,0 +1,46 @@
+---
+# Day-2: per-domain DKIM keypairs for Rspamd signing + the DNS records to publish.
+- name: Ensure DKIM key directory exists
+  ansible.builtin.file:
+    path: "{{ mailstack_rspamd_dkim_path }}"
+    state: directory
+    owner: _rspamd
+    group: _rspamd
+    mode: "0750"
+
+- name: Generate DKIM private keys
+  ansible.builtin.command:
+    cmd: >-
+      rspamadm dkim_keygen -b {{ mailstack_rspamd_dkim_bits }}
+      -s {{ mailstack_rspamd_dkim_selector }} -d {{ item }}
+      -k {{ mailstack_rspamd_dkim_path }}/{{ item }}.{{ mailstack_rspamd_dkim_selector }}.key
+    creates: "{{ mailstack_rspamd_dkim_path }}/{{ item }}.{{ mailstack_rspamd_dkim_selector }}.key"
+  loop: "{{ mailstack_domains }}"
+  notify: Restart Rspamd
+
+- name: Set DKIM key ownership
+  ansible.builtin.file:
+    path: "{{ mailstack_rspamd_dkim_path }}/{{ item }}.{{ mailstack_rspamd_dkim_selector }}.key"
+    owner: _rspamd
+    group: _rspamd
+    mode: "0640"
+  loop: "{{ mailstack_domains }}"
+
+- name: Extract DKIM public keys
+  ansible.builtin.shell:
+    cmd: >-
+      set -o pipefail;
+      openssl rsa -in {{ mailstack_rspamd_dkim_path }}/{{ item }}.{{ mailstack_rspamd_dkim_selector }}.key
+      -pubout -outform DER 2>/dev/null | openssl base64 -A
+    executable: /bin/bash
+  loop: "{{ mailstack_domains }}"
+  register: _mailstack_dkim_pub
+  changed_when: false
+
+- name: Emit DNS records to publish (DKIM, SPF, DMARC)
+  ansible.builtin.template:
+    src: dns_records.txt.j2
+    dest: "{{ mailstack_rspamd_dkim_path }}/dns_records.txt"
+    owner: root
+    group: _rspamd
+    mode: "0640"

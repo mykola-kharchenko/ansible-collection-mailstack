@@ -21,5 +21,9 @@ mailstack_rspamd_controller_password: ""
 # lays down where Rspamd looks for them and the default selector.
 mailstack_rspamd_dkim_path: /var/lib/rspamd/dkim
 mailstack_rspamd_dkim_selector: default
+mailstack_rspamd_dkim_bits: 2048
+
+# Domains to sign for (day-2). Defaults shared with the postfix role.
+mailstack_domains: []
 
 mailstack_start_services: true
