@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+# Greylisting via the shared Valkey backend.
+expire = 1d;
+timeout = 5min;
+greylist_min_score = 4;
+message = "Try again later";

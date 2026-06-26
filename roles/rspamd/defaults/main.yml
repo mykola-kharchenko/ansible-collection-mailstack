@@ -1,0 +1,25 @@
+---
+mailstack_rspamd_packages:
+  - rspamd
+
+# Backend — points at the Valkey role. Used for Bayes, greylisting, ratelimits.
+mailstack_rspamd_redis_servers: "127.0.0.1:6379"
+
+# Worker bind sockets.
+#  - proxy/milter: what Postfix's smtpd_milters connects to
+#  - controller:   web UI + learn endpoint
+#  - normal:       scanning workers
+mailstack_rspamd_milter_bind: "localhost:11332"
+mailstack_rspamd_controller_bind: "localhost:11334"
+mailstack_rspamd_normal_bind: "localhost:11333"
+
+# Controller password. Leave empty to omit (no remote control). Provide an
+# encrypted password as produced by `rspamadm pw`.
+mailstack_rspamd_controller_password: ""
+
+# DKIM signing. Keys themselves are generated and installed day-2; this only
+# lays down where Rspamd looks for them and the default selector.
+mailstack_rspamd_dkim_path: /var/lib/rspamd/dkim
+mailstack_rspamd_dkim_selector: default
+
+mailstack_start_services: true

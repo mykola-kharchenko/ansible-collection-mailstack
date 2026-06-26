@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+# Proxy worker in milter mode — this is the socket Postfix's smtpd_milters
+# connects to. self_scan makes the proxy scan locally rather than forward.
+milter = yes;
+timeout = 120s;
+
+upstream "local" {
+  default = yes;
+  self_scan = yes;
+}
+
+bind_socket = "{{ mailstack_rspamd_milter_bind }}";

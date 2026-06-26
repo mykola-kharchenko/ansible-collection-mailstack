@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+# Controller worker — web UI, stats, and the learn endpoint.
+bind_socket = "{{ mailstack_rspamd_controller_bind }}";
+{% if mailstack_rspamd_controller_password | length > 0 %}
+password = "{{ mailstack_rspamd_controller_password }}";
+enable_password = "{{ mailstack_rspamd_controller_password }}";
+{% endif %}

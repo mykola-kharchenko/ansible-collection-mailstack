@@ -1,0 +1,42 @@
+---
+- name: Install Rspamd
+  ansible.builtin.dnf:
+    name: "{{ mailstack_rspamd_packages }}"
+    state: present
+
+- name: Ensure DKIM key directory exists
+  ansible.builtin.file:
+    path: "{{ mailstack_rspamd_dkim_path }}"
+    state: directory
+    owner: _rspamd
+    group: _rspamd
+    mode: "0750"
+
+- name: Deploy Rspamd local.d configuration
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/rspamd/local.d/{{ item }}"
+    owner: root
+    group: _rspamd
+    mode: "0640"
+  loop:
+    - redis.conf
+    - classifier-bayes.conf
+    - worker-proxy.inc
+    - worker-controller.inc
+    - worker-normal.inc
+    - dkim_signing.conf
+    - milter_headers.conf
+    - greylist.conf
+  notify: Restart Rspamd
+
+- name: Enable Rspamd unit
+  ansible.builtin.systemd_service:
+    name: rspamd
+    enabled: true
+
+- name: Start Rspamd
+  ansible.builtin.systemd_service:
+    name: rspamd
+    state: started
+  when: mailstack_start_services | bool

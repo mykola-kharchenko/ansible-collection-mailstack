@@ -1,0 +1,3 @@
+# {{ ansible_managed }}
+# Global Redis/Valkey backend — shared by Bayes, greylisting and ratelimits.
+servers = "{{ mailstack_rspamd_redis_servers }}";

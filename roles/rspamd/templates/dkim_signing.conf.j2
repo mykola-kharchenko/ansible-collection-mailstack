@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+# DKIM signing. Per-domain keys are generated and installed day-2; here we only
+# declare where Rspamd looks for them and the default selector. Signing is
+# skipped silently for any domain without a key on disk.
+path = "{{ mailstack_rspamd_dkim_path }}/$domain.$selector.key";
+selector = "{{ mailstack_rspamd_dkim_selector }}";
+
+allow_username_mismatch = true;
+allow_hdrfrom_mismatch = true;
+use_domain = "header";
+sign_authenticated = true;
+sign_local = true;

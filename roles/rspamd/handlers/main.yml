@@ -1,0 +1,6 @@
+---
+- name: Restart Rspamd
+  ansible.builtin.systemd_service:
+    name: rspamd
+    state: restarted
+  when: mailstack_start_services | bool

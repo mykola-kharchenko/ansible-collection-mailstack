@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+# Headers added to scanned mail for visibility and downstream Sieve rules.
+use = ["x-spamd-bar", "x-spam-level", "authentication-results"];
+
+routines {
+  authentication-results {
+    header = "Authentication-Results";
+    remove = 0;
+  }
+}

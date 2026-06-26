@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+# Bayesian classifier backed by Valkey, with autolearn on clear ham/spam.
+backend = "redis";
+autolearn = true;
+new_schema = true;
+expire = 8640000;
