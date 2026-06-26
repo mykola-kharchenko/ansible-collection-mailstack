@@ -1,0 +1,44 @@
+---
+# Day-2, runtime. Manages machine-local state in the persistent filesystem
+# (/etc, /var) on a running mailstack host — never touches /usr. Idempotent.
+#
+#   ansible-playbook -i inventory mykola_kharchenko.mailstack.provision
+#
+# Drive it with the mailstack_domains / mailstack_mailboxes / mailstack_aliases
+# variables (see the postfix and dovecot role defaults for their shapes).
+- name: Provision the mailstack (day-2)
+  hosts: mailservers
+  become: true
+  gather_facts: true
+  vars:
+    mailstack_start_services: true
+  tasks:
+    - name: Manage virtual domains
+      ansible.builtin.include_role:
+        name: mykola_kharchenko.mailstack.postfix
+        tasks_from: domains.yml
+
+    - name: Manage aliases
+      ansible.builtin.include_role:
+        name: mykola_kharchenko.mailstack.postfix
+        tasks_from: aliases.yml
+
+    - name: Manage mailboxes
+      ansible.builtin.include_role:
+        name: mykola_kharchenko.mailstack.dovecot
+        tasks_from: mailboxes.yml
+
+    - name: Manage DKIM keys and emit DNS records
+      ansible.builtin.include_role:
+        name: mykola_kharchenko.mailstack.rspamd
+        tasks_from: dkim.yml
+
+    - name: Manage TLS certificates (Postfix)
+      ansible.builtin.include_role:
+        name: mykola_kharchenko.mailstack.postfix
+        tasks_from: tls.yml
+
+    - name: Manage TLS certificates (Dovecot)
+      ansible.builtin.include_role:
+        name: mykola_kharchenko.mailstack.dovecot
+        tasks_from: tls.yml
