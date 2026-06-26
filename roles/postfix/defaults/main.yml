@@ -1,0 +1,27 @@
+---
+mailstack_postfix_packages:
+  - postfix
+
+# Identity.
+mailstack_postfix_myhostname: "mail.{{ ansible_domain | default('example.com') }}"
+mailstack_postfix_mydomain: "{{ ansible_domain | default('example.com') }}"
+mailstack_postfix_myorigin: "$mydomain"
+mailstack_postfix_relayhost: ""
+
+# Rspamd milter (proxy worker from the rspamd role).
+mailstack_postfix_milter: "inet:localhost:11332"
+
+# Local delivery handed to Dovecot over LMTP on a unix socket inside Postfix's
+# private spool directory (Dovecot creates it there).
+mailstack_postfix_virtual_transport: "lmtp:unix:private/dovecot-lmtp"
+
+# Dovecot SASL socket for submission auth.
+mailstack_postfix_sasl_path: "private/auth"
+
+mailstack_postfix_message_size_limit: 52428800
+
+# Server TLS material (installed/renewed day-2).
+mailstack_postfix_tls_cert: /etc/pki/tls/certs/mail.crt
+mailstack_postfix_tls_key: /etc/pki/tls/private/mail.key
+
+mailstack_start_services: true

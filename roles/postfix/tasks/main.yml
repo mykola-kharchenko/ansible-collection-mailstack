@@ -1,0 +1,56 @@
+---
+- name: Install Postfix
+  ansible.builtin.dnf:
+    name: "{{ mailstack_postfix_packages }}"
+    state: present
+
+- name: Ensure virtual lookup tables exist
+  ansible.builtin.copy:
+    content: ""
+    dest: "/etc/postfix/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+    force: false
+  loop:
+    - virtual_domains
+    - virtual_mailbox
+    - virtual_alias
+
+- name: Compile virtual lookup tables
+  ansible.builtin.command: "postmap /etc/postfix/{{ item }}"
+  args:
+    creates: "/etc/postfix/{{ item }}.db"
+  loop:
+    - virtual_domains
+    - virtual_mailbox
+    - virtual_alias
+
+- name: Deploy Postfix main.cf
+  ansible.builtin.template:
+    src: main.cf.j2
+    dest: /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload Postfix
+
+- name: Deploy Postfix master.cf
+  ansible.builtin.template:
+    src: master.cf.j2
+    dest: /etc/postfix/master.cf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Postfix
+
+- name: Enable Postfix unit
+  ansible.builtin.systemd_service:
+    name: postfix
+    enabled: true
+
+- name: Start Postfix
+  ansible.builtin.systemd_service:
+    name: postfix
+    state: started
+  when: mailstack_start_services | bool

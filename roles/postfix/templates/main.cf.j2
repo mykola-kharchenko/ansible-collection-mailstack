@@ -1,0 +1,56 @@
+# {{ ansible_managed }}
+compatibility_level = 3.6
+
+# --- Identity -------------------------------------------------------------
+myhostname = {{ mailstack_postfix_myhostname }}
+mydomain = {{ mailstack_postfix_mydomain }}
+myorigin = {{ mailstack_postfix_myorigin }}
+inet_interfaces = all
+inet_protocols = all
+# Local delivery is virtual-only (Dovecot via LMTP); keep mydestination minimal.
+mydestination = localhost
+mynetworks_style = host
+relayhost = {{ mailstack_postfix_relayhost }}
+
+biff = no
+append_dot_mydomain = no
+readme_directory = no
+message_size_limit = {{ mailstack_postfix_message_size_limit }}
+
+# --- TLS ------------------------------------------------------------------
+smtpd_tls_cert_file = {{ mailstack_postfix_tls_cert }}
+smtpd_tls_key_file = {{ mailstack_postfix_tls_key }}
+smtpd_tls_security_level = may
+smtpd_tls_loglevel = 1
+smtp_tls_security_level = may
+smtp_tls_loglevel = 1
+
+# --- SASL (via Dovecot) ---------------------------------------------------
+# Enabled per-service on submission/smtps in master.cf, not for inbound :25.
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = {{ mailstack_postfix_sasl_path }}
+smtpd_sasl_auth_enable = no
+
+# --- Milter (Rspamd) ------------------------------------------------------
+smtpd_milters = {{ mailstack_postfix_milter }}
+non_smtpd_milters = {{ mailstack_postfix_milter }}
+milter_default_action = accept
+milter_protocol = 6
+milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
+
+# --- Virtual delivery (Dovecot LMTP) --------------------------------------
+virtual_transport = {{ mailstack_postfix_virtual_transport }}
+virtual_mailbox_domains = hash:/etc/postfix/virtual_domains
+virtual_mailbox_maps = hash:/etc/postfix/virtual_mailbox
+virtual_alias_maps = hash:/etc/postfix/virtual_alias
+
+# --- Restrictions ---------------------------------------------------------
+smtpd_helo_required = yes
+smtpd_relay_restrictions =
+    permit_mynetworks
+    permit_sasl_authenticated
+    reject_unauth_destination
+smtpd_recipient_restrictions =
+    permit_mynetworks
+    permit_sasl_authenticated
+    reject_unauth_destination
