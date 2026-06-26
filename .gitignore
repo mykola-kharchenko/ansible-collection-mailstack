@@ -1,0 +1,21 @@
+# Collection build artifacts
+*.tar.gz
+/mykola_kharchenko-mailstack-*
+
+# Ansible runtime
+*.retry
+.ansible/
+ansible.log
+/collections/
+
+# Molecule / testing
+.cache/
+.pytest_cache/
+__pycache__/
+*.pyc
+
+# Editor / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store

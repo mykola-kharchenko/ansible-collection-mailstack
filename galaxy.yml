@@ -1,0 +1,38 @@
+---
+namespace: mykola_kharchenko
+name: mailstack
+version: 0.1.0
+readme: README.md
+authors:
+  - Mykola Kharchenko <no-reply@mykola-kharchenko.me>
+description: >-
+  Build and operate a self-hosted mail server on Fedora and RHEL in image mode
+  (bootc). Postfix, Dovecot, Rspamd, ClamAV, Valkey and Fail2ban, wired with
+  native systemd units.
+license:
+  - GPL-3.0-or-later
+tags:
+  - mail
+  - mailserver
+  - postfix
+  - dovecot
+  - rspamd
+  - bootc
+  - fedora
+  - rhel
+  - smtp
+  - imap
+dependencies:
+  ansible.posix: ">=1.5.0"
+  community.general: ">=8.0.0"
+  community.crypto: ">=2.0.0"
+repository: https://github.com/mykola-kharchenko/ansible-collection-mailstack
+issues: https://github.com/mykola-kharchenko/ansible-collection-mailstack/issues
+build_ignore:
+  - .github
+  - molecule
+  - docs
+  - "*.tar.gz"
+  - .ansible-lint
+  - .yamllint
+  - .editorconfig
