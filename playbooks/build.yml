@@ -1,0 +1,23 @@
+---
+# Day-1, build-time. Invoked from a Containerfile with a local connection to
+# produce an immutable bootc image:
+#
+#   ansible-playbook -i localhost, -c local \
+#     mykola_kharchenko.mailstack.build
+#
+# Image builds run as root inside the build container, so no privilege
+# escalation, and no systemd is running — units are enabled but not started.
+- name: Build the mailstack image (day-1)
+  hosts: all
+  become: false
+  gather_facts: true
+  vars:
+    mailstack_start_services: false
+  roles:
+    - mykola_kharchenko.mailstack.repos
+    - mykola_kharchenko.mailstack.valkey
+    - mykola_kharchenko.mailstack.rspamd
+    - mykola_kharchenko.mailstack.clamav
+    - mykola_kharchenko.mailstack.postfix
+    - mykola_kharchenko.mailstack.dovecot
+    - mykola_kharchenko.mailstack.fail2ban
