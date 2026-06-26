@@ -1,0 +1,24 @@
+---
+mailstack_fail2ban_packages:
+  - fail2ban
+  - fail2ban-firewalld
+
+# Read auth failures from the systemd journal rather than log files.
+mailstack_fail2ban_backend: systemd
+
+mailstack_fail2ban_bantime: 1h
+mailstack_fail2ban_findtime: 10m
+mailstack_fail2ban_maxretry: 5
+mailstack_fail2ban_ignoreip: "127.0.0.1/8 ::1"
+
+# firewalld is the enforcement point (fail2ban-firewalld package).
+mailstack_fail2ban_banaction: firewallcmd-rich-rules
+
+# Jails to enable. Each maps to a stock filter shipped with fail2ban.
+mailstack_fail2ban_jails:
+  - postfix
+  - postfix-sasl
+  - dovecot
+  - sieve
+
+mailstack_start_services: true

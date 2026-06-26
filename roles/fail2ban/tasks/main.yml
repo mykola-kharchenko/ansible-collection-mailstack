@@ -1,0 +1,25 @@
+---
+- name: Install Fail2ban
+  ansible.builtin.dnf:
+    name: "{{ mailstack_fail2ban_packages }}"
+    state: present
+
+- name: Deploy Fail2ban jail configuration
+  ansible.builtin.template:
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Fail2ban
+
+- name: Enable Fail2ban unit
+  ansible.builtin.systemd_service:
+    name: fail2ban
+    enabled: true
+
+- name: Start Fail2ban
+  ansible.builtin.systemd_service:
+    name: fail2ban
+    state: started
+  when: mailstack_start_services | bool

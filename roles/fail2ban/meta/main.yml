@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  author: Mykola Kharchenko
+  description: Brute-force protection for SMTP and IMAP auth via Fail2ban
+  license: GPL-3.0-or-later
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Fedora
+      versions:
+        - all
+    - name: EL
+      versions:
+        - "9"
+        - "10"
+  galaxy_tags:
+    - mail
+    - fail2ban
+    - security
+    - firewalld
+dependencies: []

@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+[DEFAULT]
+backend = {{ mailstack_fail2ban_backend }}
+bantime = {{ mailstack_fail2ban_bantime }}
+findtime = {{ mailstack_fail2ban_findtime }}
+maxretry = {{ mailstack_fail2ban_maxretry }}
+ignoreip = {{ mailstack_fail2ban_ignoreip }}
+banaction = {{ mailstack_fail2ban_banaction }}
+
+{% for jail in mailstack_fail2ban_jails %}
+[{{ jail }}]
+enabled = true
+{% if jail == 'postfix' %}
+mode = aggressive
+{% endif %}
+
+{% endfor %}
