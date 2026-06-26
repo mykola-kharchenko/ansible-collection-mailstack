@@ -24,4 +24,11 @@ mailstack_postfix_message_size_limit: 52428800
 mailstack_postfix_tls_cert: /etc/pki/tls/certs/mail.crt
 mailstack_postfix_tls_key: /etc/pki/tls/private/mail.key
 
+# Firewall: SMTP (25), SMTPS (465), submission (587).
+mailstack_manage_firewall: true
+mailstack_postfix_firewall_ports:
+  - 25/tcp
+  - 465/tcp
+  - 587/tcp
+
 mailstack_start_services: true

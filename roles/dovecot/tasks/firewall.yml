@@ -1,0 +1,23 @@
+---
+- name: Ensure firewalld is installed
+  ansible.builtin.dnf:
+    name: firewalld
+    state: present
+
+# Runtime: firewalld is running, configure permanent + live rules via the module.
+- name: Open Dovecot ports (runtime)
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ mailstack_dovecot_firewall_ports }}"
+  when: mailstack_start_services | bool
+
+# Build time: no running daemon, bake permanent config with the offline tool.
+- name: Open Dovecot ports (build time, offline)
+  ansible.builtin.command: "firewall-offline-cmd --add-port={{ item }}"
+  register: _dovecot_fw
+  changed_when: "'ALREADY_ENABLED' not in _dovecot_fw.stderr"
+  loop: "{{ mailstack_dovecot_firewall_ports }}"
+  when: not (mailstack_start_services | bool)

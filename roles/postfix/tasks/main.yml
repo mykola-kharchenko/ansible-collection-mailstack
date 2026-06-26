@@ -44,6 +44,10 @@
     mode: "0644"
   notify: Restart Postfix
 
+- name: Open firewall ports
+  ansible.builtin.include_tasks: firewall.yml
+  when: mailstack_manage_firewall | bool
+
 - name: Enable Postfix unit
   ansible.builtin.systemd_service:
     name: postfix

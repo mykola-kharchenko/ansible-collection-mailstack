@@ -1,0 +1,23 @@
+---
+- name: Ensure firewalld is installed
+  ansible.builtin.dnf:
+    name: firewalld
+    state: present
+
+# Runtime: firewalld is running, configure permanent + live rules via the module.
+- name: Open Postfix ports (runtime)
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ mailstack_postfix_firewall_ports }}"
+  when: mailstack_start_services | bool
+
+# Build time: no running daemon, bake permanent config with the offline tool.
+- name: Open Postfix ports (build time, offline)
+  ansible.builtin.command: "firewall-offline-cmd --add-port={{ item }}"
+  register: _postfix_fw
+  changed_when: "'ALREADY_ENABLED' not in _postfix_fw.stderr"
+  loop: "{{ mailstack_postfix_firewall_ports }}"
+  when: not (mailstack_start_services | bool)

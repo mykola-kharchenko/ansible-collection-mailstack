@@ -79,6 +79,10 @@
     mode: "0640"
   notify: Compile default Sieve
 
+- name: Open firewall ports
+  ansible.builtin.include_tasks: firewall.yml
+  when: mailstack_manage_firewall | bool
+
 - name: Enable Dovecot unit
   ansible.builtin.systemd_service:
     name: dovecot
